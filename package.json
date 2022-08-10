@@ -1,0 +1,35 @@
+{
+  "type": "module",
+  "name": "devops-fundamentals",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voronve/devops-fundamentals.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Voronve/devops-fundamentals/issues"
+  },
+  "homepage": "https://github.com/Voronve/devops-fundamentals#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "husky": "^8.0.1"
+  },
+  "commitlint": {
+    "rules": {
+      "header-case": [2, "always", "lower-case"],
+      "header-full-stop": [2, "never", "."],
+      "header-max-length": [2, "always", 100],
+      "type-enum": [2, "always", ["feat", "fix", "refactor"]],
+      "type-case": [2, "always", "lower-case"],
+      "type-empty": [2, "never"]
+    }
+  }
+}
