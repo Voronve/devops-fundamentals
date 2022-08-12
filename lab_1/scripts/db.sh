@@ -18,9 +18,14 @@
 #===============================================================================
 
 set -o nounset                              # Treat unset variables as an error
+CURRENT_DIR="$( dirname -- "$0" )"
+DB_DIR="$CURRENT_DIR/../data/"
+DB="$DB_DIR/users.db"
+ARG1=${1:-'default'}
+ARG2=${2:-'default'}
 
 
-fileCheck ()
+createFile ()
 {
     if [ -f "$1" ]
     then
@@ -49,7 +54,6 @@ addingUser ()
 {
     local USERNAME=''
     local ROLE=''
-    local DB='../data/users.db'
 
     until [[ $USERNAME =~ ^[A-Za-z]+$ ]];
     do
@@ -63,7 +67,7 @@ addingUser ()
         read ROLE
     done
 
-    fileCheck $DB
+    createFile $DB
 
     local CHECK_RESULT=$?
 
@@ -76,9 +80,94 @@ addingUser ()
     fi
 }	# ----------  end of function addingUser  ----------
 
-if [ $1 == 'add' ];
-then
-    addingUser
-else
-    echo 'Its not an add argument'
-fi
+
+backupDB ()
+{
+    cp $DB "$DB_DIR$( date +%m-%d-%y\(%k:%M\) )-users.db.backup"
+    echo "DB was successfully saved"
+}	# ----------  end of function backupDB  ----------
+
+
+searchUser ()
+{
+    n=0
+    local USERNAME=''
+    until [[ $USERNAME =~ ^[A-Za-z]+$ ]];
+    do
+        echo "Enter username to search in db. Please, use only latin letters"
+        read USERNAME
+    done
+
+    while read line
+    do
+        STR_ARR=( ${line//,/} )
+
+        if [ ${STR_ARR[0]} = $USERNAME ]
+        then
+            n++
+            echo "Name: ${STR_ARR[0]} Role: ${STR_ARR[1]}"
+        fi
+    done < $DB
+
+    if [ $n -eq 0 ]
+    then
+        echo "User not found"
+    fi
+
+}	# ----------  end of function searchUser  ----------
+
+
+restoreDB ()
+{
+    BACKUP_ARR=( $(ls "$DB_DIR" | sort -r) )
+
+    if [ ${#BACKUP_ARR[@]} -le 1 ]
+    then
+        echo "No backub file found"
+        return 1
+    fi
+    cp "$DB_DIR${BACKUP_ARR[1]}" $DB
+    echo "Backup was sucessfully used"
+}	# ----------  end of function restoreDB  ----------
+
+
+usersList ()
+{
+    n=0
+    USERS=()
+
+    while read line
+    do
+        USERS[$n]="$((++n)). $line"
+    done < $DB
+
+    if [ $1 == '--inverse' ]
+    then
+        for (( index=$n; index>0; index-- ))
+        do
+            echo ${USERS[$index]}
+        done
+    else
+        for user in "${USERS[@]}"
+        do
+            echo $user
+        done
+    fi
+}	# ----------  end of function usersList  ----------
+
+case "$ARG1" in
+    add)
+        addingUser;;
+    help)
+        echo 'Help';;
+    backup)
+        backupDB;;
+    restore)
+        restoreDB;;
+    find)
+        searchUser;;
+    list)
+        usersList $ARG2;;
+    *)
+        echo 'Operator is not defined';;
+esac
