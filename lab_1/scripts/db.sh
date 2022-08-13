@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #===============================================================================
 #
 #          FILE: db.sh
@@ -104,7 +103,7 @@ searchUser ()
 
         if [ ${STR_ARR[0]} = $USERNAME ]
         then
-            n++
+            ((n++))
             echo "Name: ${STR_ARR[0]} Role: ${STR_ARR[1]}"
         fi
     done < $DB
@@ -155,11 +154,15 @@ usersList ()
     fi
 }	# ----------  end of function usersList  ----------
 
+
+helpInfo ()
+{
+    cat "$CURRENT_DIR/../readme.txt"
+}	# ----------  end of function helpInfo  ----------
+
 case "$ARG1" in
     add)
         addingUser;;
-    help)
-        echo 'Help';;
     backup)
         backupDB;;
     restore)
@@ -168,6 +171,6 @@ case "$ARG1" in
         searchUser;;
     list)
         usersList $ARG2;;
-    *)
-        echo 'Operator is not defined';;
+    help | *)
+        helpInfo;;
 esac
