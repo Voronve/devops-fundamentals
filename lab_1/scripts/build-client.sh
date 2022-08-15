@@ -21,7 +21,7 @@ set -o nounset                              # Treat unset variables as an error
 
 ENV_CONFIGURATION=${1:-''}
 
-cd ../shop-angular-cloudfront/
+cd "$( dirname -- "$0" )/../shop-angular-cloudfront/"
 npm i
 
 if [[ $ENV_CONFIGURATION != 'production' ]]
